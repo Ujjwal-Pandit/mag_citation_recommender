@@ -21,37 +21,76 @@ source venv/bin/activate
 
 ### 3. Install PyTorch with CUDA support
 
-**First, check your CUDA version:**
+**Option A: Auto-detection script (Recommended - no CUDA version checking needed)**
 ```bash
-nvidia-smi
+# Make script executable and run
+chmod +x install_dependencies.sh
+./install_dependencies.sh
 ```
 
-**Then install PyTorch based on your CUDA version:**
+This script will:
+- Try installing PyTorch with different CUDA versions automatically
+- Detect which CUDA version works after installation
+- Install the correct PyTorch Geometric dependencies
+- Verify everything is working
 
-#### For CUDA 11.8:
+**Option B: Manual installation (if you know CUDA version)**
+
+If you cannot check CUDA version with `nvidia-smi`, try these in order:
+
+#### Try CUDA 11.8 first (most common):
 ```bash
 pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
 ```
 
-#### For CUDA 12.1:
+#### If that fails, try CUDA 12.1:
 ```bash
 pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu121
 ```
 
-#### For CPU only (not recommended for training):
+#### If both fail, install CPU version:
 ```bash
 pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0
 ```
 
-### 4. Install PyTorch Geometric dependencies
+**After installing PyTorch, detect the CUDA version programmatically:**
 ```bash
-# Install these in order (they have specific build requirements)
+python3 -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('CUDA version:', torch.version.cuda if torch.cuda.is_available() else 'N/A')"
+```
+
+### 4. Install PyTorch Geometric dependencies
+
+**If using the auto-detection script (Option A), skip this step - it's handled automatically.**
+
+**If installing manually (Option B), detect CUDA version first:**
+```bash
+# Detect CUDA version from installed PyTorch
+CUDA_VER=$(python3 -c "import torch; print(torch.version.cuda.split('.')[0]+'.'+torch.version.cuda.split('.')[1] if torch.cuda.is_available() and torch.version.cuda else 'cpu')")
+echo "Detected CUDA version: $CUDA_VER"
+```
+
+Then install based on detected version:
+
+#### For CUDA 11.8 (or if detection shows 11.x):
+```bash
 pip install torch-scatter==2.1.2 -f https://data.pyg.org/whl/torch-2.1.0+cu118.html
 pip install torch-sparse==0.6.17 -f https://data.pyg.org/whl/torch-2.1.0+cu118.html
 pip install torch-cluster==1.6.1 -f https://data.pyg.org/whl/torch-2.1.0+cu118.html
 ```
 
-**Note:** Replace `cu118` with `cu121` if using CUDA 12.1, or `cpu` for CPU-only builds.
+#### For CUDA 12.1+ (or if detection shows 12.x):
+```bash
+pip install torch-scatter==2.1.2 -f https://data.pyg.org/whl/torch-2.1.0+cu121.html
+pip install torch-sparse==0.6.17 -f https://data.pyg.org/whl/torch-2.1.0+cu121.html
+pip install torch-cluster==1.6.1 -f https://data.pyg.org/whl/torch-2.1.0+cu121.html
+```
+
+#### For CPU only:
+```bash
+pip install torch-scatter==2.1.2 -f https://data.pyg.org/whl/torch-2.1.0+cpu.html
+pip install torch-sparse==0.6.17 -f https://data.pyg.org/whl/torch-2.1.0+cpu.html
+pip install torch-cluster==1.6.1 -f https://data.pyg.org/whl/torch-2.1.0+cpu.html
+```
 
 ### 5. Install remaining packages
 ```bash
@@ -112,9 +151,10 @@ pip install -r requirements.txt
 4. Visit https://data.pyg.org/whl/ to find the correct wheel files
 
 ### If CUDA is not detected:
-- Verify GPU is available: `nvidia-smi`
-- Reinstall PyTorch with the correct CUDA version
-- Check that CUDA drivers are installed on the system
+- Try installing PyTorch with different CUDA versions (11.8, then 12.1)
+- After installing PyTorch, check programmatically: `python3 -c "import torch; print(torch.cuda.is_available())"`
+- If CUDA is still not available, the cluster may not have GPU access or you may need to request GPU resources via SLURM
+- Reinstall PyTorch with the correct CUDA version if needed
 
 ## Optional: LLM Integration Packages
 

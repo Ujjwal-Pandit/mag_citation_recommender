@@ -18,11 +18,24 @@ cd mag_citation_recommender
 conda create -n mag_citation python=3.9 -y
 conda activate mag_citation
 
-# Install PyTorch with CUDA support (adjust CUDA version as needed)
-conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia -y
+# Install PyTorch with CUDA support (auto-detects CUDA version)
+# Try CUDA 11.8 first (most common)
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia -y || \
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia -y
 
 # Install other dependencies
 pip install torch-geometric sentence-transformers tqdm numpy
+```
+
+#### Option A2: Using auto-detection script (easiest - no CUDA version needed)
+```bash
+# Create environment first
+conda create -n mag_citation python=3.9 -y
+conda activate mag_citation
+
+# Run the auto-detection installer
+chmod +x install_dependencies.sh
+./install_dependencies.sh
 ```
 
 #### Option B: Using venv
@@ -31,11 +44,24 @@ pip install torch-geometric sentence-transformers tqdm numpy
 python3 -m venv venv
 source venv/bin/activate
 
-# Install PyTorch with CUDA support
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# Install PyTorch with CUDA support (auto-detects)
+# Try CUDA 11.8 first, then 12.1 if that fails
+pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118 || \
+pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu121
 
 # Install other dependencies
 pip install torch-geometric sentence-transformers tqdm numpy
+```
+
+#### Option B2: Using auto-detection script (easiest)
+```bash
+# Create environment first
+python3 -m venv venv
+source venv/bin/activate
+
+# Run the auto-detection installer
+chmod +x install_dependencies.sh
+./install_dependencies.sh
 ```
 
 ### 3. Request GPU resources (if using SLURM)
@@ -118,9 +144,10 @@ sbatch run_notebook.sh
 ```
 
 ## Notes
-- Adjust CUDA version (11.8, 12.1, etc.) based on cluster's CUDA version
-- Check available GPUs: `nvidia-smi`
-- Monitor GPU usage: `watch -n 1 nvidia-smi`
+- **No CUDA version checking needed**: Use `./install_dependencies.sh` script for auto-detection
+- If you can't check CUDA version with `nvidia-smi`, the script will try different versions automatically
+- After installation, verify GPU: `python3 -c "import torch; print(torch.cuda.is_available())"`
+- Monitor GPU usage: `watch -n 1 nvidia-smi` (if allowed by admin)
 - The notebook will automatically download data files if they don't exist
 - Checkpoints will be saved in `checkpoints/` directory
 
