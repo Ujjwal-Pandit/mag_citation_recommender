@@ -27,15 +27,15 @@ conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvi
 pip install torch-geometric sentence-transformers tqdm numpy
 ```
 
-#### Option A2: Using auto-detection script (easiest - no CUDA version needed)
+#### Option A2: Delete and recreate environment (if needed)
 ```bash
-# Create environment first
+# Delete existing environment
+conda deactivate  # if currently activated
+conda env remove -n mag_citation
+
+# Create fresh environment
 conda create -n mag_citation python=3.9 -y
 conda activate mag_citation
-
-# Run the auto-detection installer
-chmod +x install_dependencies.sh
-./install_dependencies.sh
 ```
 
 #### Option B: Using venv
