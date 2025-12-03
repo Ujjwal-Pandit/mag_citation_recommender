@@ -1,0 +1,37 @@
+# Required Package Versions for Server Installation
+
+## Core Dependencies
+
+Python: 3.9
+
+PyTorch (install with CUDA):
+- torch==2.1.0
+- torchvision==0.16.0
+- torchaudio==2.1.0
+Install from: https://download.pytorch.org/whl/ (select cu118 or cu121 based on your CUDA version)
+
+PyTorch Geometric:
+- torch-geometric==2.4.0
+- torch-scatter==2.1.2
+- torch-sparse==0.6.17
+- torch-cluster==1.6.1
+
+Other Packages:
+- sentence-transformers==2.2.2
+- numpy==1.24.3
+- pandas==2.0.3
+- tqdm==4.66.1
+
+## Quick Install Commands
+
+# 1. PyTorch (CUDA 11.8)
+pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
+
+# 2. PyTorch Geometric dependencies
+pip install torch-scatter==2.1.2 -f https://data.pyg.org/whl/torch-2.1.0+cu118.html
+pip install torch-sparse==0.6.17 -f https://data.pyg.org/whl/torch-2.1.0+cu118.html
+pip install torch-cluster==1.6.1 -f https://data.pyg.org/whl/torch-2.1.0+cu118.html
+
+# 3. Other packages
+pip install torch-geometric==2.4.0 sentence-transformers==2.2.2 numpy==1.24.3 pandas==2.0.3 tqdm==4.66.1
+
